@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "PEP落とし物管理システム"
+version = "1.0.0"
+id = "artifacts/pep-lost-found"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22599
+
+[services.development]
+run = "pnpm --filter @workspace/pep-lost-found run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/pep-lost-found", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/pep-lost-found/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22599"
+BASE_PATH = "/"

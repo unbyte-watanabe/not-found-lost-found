@@ -3,13 +3,22 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: PlayEarthPark Lost and Found Management System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: dashboard
+    description: Dashboard statistics
+  - name: found-items
+    description: Found item management
+  - name: lost-reports
+    description: Lost report management
+  - name: matches
+    description: Matching between found items and lost reports
+
 paths:
   /healthz:
     get:
@@ -24,6 +33,375 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard statistics
+      description: Returns counts by status, today's finds, and near-expiry items
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/weekly-trend:
+    get:
+      operationId: getDashboardWeeklyTrend
+      tags: [dashboard]
+      summary: Get weekly trend data
+      description: Returns found and returned item counts for the last 7 days
+      responses:
+        "200":
+          description: Weekly trend data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WeeklyTrendItem"
+
+  /found-items:
+    get:
+      operationId: listFoundItems
+      tags: [found-items]
+      summary: List found items
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [保管中, 返還済, 警察提出済, 期間満了処分]
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [財布・カバン類, 衣類, 電子機器, 傘, その他]
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: List of found items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoundItemList"
+
+    post:
+      operationId: createFoundItem
+      tags: [found-items]
+      summary: Register a new found item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FoundItemInput"
+      responses:
+        "201":
+          description: Created found item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoundItem"
+
+  /found-items/{id}:
+    get:
+      operationId: getFoundItem
+      tags: [found-items]
+      summary: Get a found item by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Found item detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoundItem"
+        "404":
+          description: Not found
+
+    put:
+      operationId: updateFoundItem
+      tags: [found-items]
+      summary: Update a found item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FoundItemUpdate"
+      responses:
+        "200":
+          description: Updated found item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoundItem"
+        "404":
+          description: Not found
+
+    delete:
+      operationId: deleteFoundItem
+      tags: [found-items]
+      summary: Delete a found item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+
+  /found-items/{id}/status:
+    patch:
+      operationId: updateFoundItemStatus
+      tags: [found-items]
+      summary: Update found item status (return/submit to police/dispose)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FoundItemStatusUpdate"
+      responses:
+        "200":
+          description: Updated found item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FoundItem"
+        "404":
+          description: Not found
+
+  /found-items/export/police:
+    get:
+      operationId: exportFoundItemsForPolice
+      tags: [found-items]
+      summary: Export found items as CSV for police submission
+      parameters:
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: CSV file content
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /lost-reports:
+    get:
+      operationId: listLostReports
+      tags: [lost-reports]
+      summary: List lost reports
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [探索中, 解決済, キャンセル]
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [財布・カバン類, 衣類, 電子機器, 傘, その他]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: List of lost reports
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LostReportList"
+
+    post:
+      operationId: createLostReport
+      tags: [lost-reports]
+      summary: Register a new lost report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LostReportInput"
+      responses:
+        "201":
+          description: Created lost report with match suggestions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LostReportWithMatches"
+
+  /lost-reports/{id}:
+    get:
+      operationId: getLostReport
+      tags: [lost-reports]
+      summary: Get a lost report by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lost report detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LostReport"
+        "404":
+          description: Not found
+
+    put:
+      operationId: updateLostReport
+      tags: [lost-reports]
+      summary: Update a lost report
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LostReportUpdate"
+      responses:
+        "200":
+          description: Updated lost report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LostReport"
+        "404":
+          description: Not found
+
+  /lost-reports/{id}/status:
+    patch:
+      operationId: updateLostReportStatus
+      tags: [lost-reports]
+      summary: Update lost report status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LostReportStatusUpdate"
+      responses:
+        "200":
+          description: Updated lost report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LostReport"
+        "404":
+          description: Not found
+
+  /matches:
+    get:
+      operationId: listMatches
+      tags: [matches]
+      summary: Get all matching candidates
+      parameters:
+        - name: foundItemId
+          in: query
+          schema:
+            type: string
+        - name: lostReportId
+          in: query
+          schema:
+            type: string
+        - name: minScore
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        "200":
+          description: List of match candidates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchCandidate"
+
+
 components:
   schemas:
     HealthStatus:
@@ -33,4 +411,339 @@ components:
           type: string
       required:
         - status
+
+    DashboardStats:
+      type: object
+      required:
+        - storing
+        - todayFound
+        - nearExpiry
+        - totalThisMonth
+        - returnedThisMonth
+        - activeLostReports
+        - pendingMatches
+      properties:
+        storing:
+          type: integer
+          description: Items currently in storage
+        todayFound:
+          type: integer
+          description: Items found today
+        nearExpiry:
+          type: integer
+          description: Items stored 2+ months (near expiry)
+        totalThisMonth:
+          type: integer
+          description: Total items found this month
+        returnedThisMonth:
+          type: integer
+          description: Items returned this month
+        activeLostReports:
+          type: integer
+          description: Active lost reports being searched
+        pendingMatches:
+          type: integer
+          description: Unresolved match candidates
+
+    WeeklyTrendItem:
+      type: object
+      required: [date, found, returned]
+      properties:
+        date:
+          type: string
+          format: date
+        found:
+          type: integer
+        returned:
+          type: integer
+
+    FinderInfo:
+      type: object
+      properties:
+        name:
+          type: ["string", "null"]
+        contact:
+          type: ["string", "null"]
+        rightsWaived:
+          type: boolean
+
+    FoundItem:
+      type: object
+      required:
+        - id
+        - managementNo
+        - status
+        - category
+        - foundDatetime
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        managementNo:
+          type: string
+        status:
+          type: string
+          enum: [保管中, 返還済, 警察提出済, 期間満了処分]
+        category:
+          type: string
+          enum: [財布・カバン類, 衣類, 電子機器, 傘, その他]
+        subCategory:
+          type: ["string", "null"]
+        features:
+          type: ["string", "null"]
+        foundDatetime:
+          type: string
+          format: date-time
+        foundLocation:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        storageLocation:
+          type: ["string", "null"]
+        finderInfo:
+          oneOf:
+            - $ref: "#/components/schemas/FinderInfo"
+            - type: "null"
+        returnedAt:
+          type: ["string", "null"]
+          format: date-time
+        returnedTo:
+          type: ["string", "null"]
+        returnedBy:
+          type: ["string", "null"]
+        identityVerified:
+          type: boolean
+        receiptSigned:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    FoundItemInput:
+      type: object
+      required:
+        - category
+        - foundDatetime
+      properties:
+        category:
+          type: string
+          enum: [財布・カバン類, 衣類, 電子機器, 傘, その他]
+        subCategory:
+          type: string
+        features:
+          type: string
+        foundDatetime:
+          type: string
+          format: date-time
+        foundLocation:
+          type: string
+        imageUrl:
+          type: string
+        storageLocation:
+          type: string
+        finderInfo:
+          $ref: "#/components/schemas/FinderInfo"
+
+    FoundItemUpdate:
+      type: object
+      properties:
+        category:
+          type: string
+          enum: [財布・カバン類, 衣類, 電子機器, 傘, その他]
+        subCategory:
+          type: ["string", "null"]
+        features:
+          type: ["string", "null"]
+        foundDatetime:
+          type: string
+          format: date-time
+        foundLocation:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        storageLocation:
+          type: ["string", "null"]
+        finderInfo:
+          oneOf:
+            - $ref: "#/components/schemas/FinderInfo"
+            - type: "null"
+
+    FoundItemStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [保管中, 返還済, 警察提出済, 期間満了処分]
+        returnedTo:
+          type: string
+        returnedBy:
+          type: string
+        identityVerified:
+          type: boolean
+        receiptSigned:
+          type: boolean
+
+    FoundItemList:
+      type: object
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/FoundItem"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    LostReport:
+      type: object
+      required:
+        - id
+        - status
+        - ownerName
+        - ownerContact
+        - category
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [探索中, 解決済, キャンセル]
+        ownerName:
+          type: string
+        ownerContact:
+          type: string
+        lostDatetimeFrom:
+          type: ["string", "null"]
+          format: date-time
+        lostDatetimeTo:
+          type: ["string", "null"]
+          format: date-time
+        lostLocationEstimated:
+          type: ["string", "null"]
+        category:
+          type: string
+          enum: [財布・カバン類, 衣類, 電子機器, 傘, その他]
+        features:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    LostReportInput:
+      type: object
+      required:
+        - ownerName
+        - ownerContact
+        - category
+      properties:
+        ownerName:
+          type: string
+        ownerContact:
+          type: string
+        lostDatetimeFrom:
+          type: string
+          format: date-time
+        lostDatetimeTo:
+          type: string
+          format: date-time
+        lostLocationEstimated:
+          type: string
+        category:
+          type: string
+          enum: [財布・カバン類, 衣類, 電子機器, 傘, その他]
+        features:
+          type: string
+
+    LostReportUpdate:
+      type: object
+      properties:
+        ownerName:
+          type: string
+        ownerContact:
+          type: string
+        lostDatetimeFrom:
+          type: ["string", "null"]
+          format: date-time
+        lostDatetimeTo:
+          type: ["string", "null"]
+          format: date-time
+        lostLocationEstimated:
+          type: ["string", "null"]
+        category:
+          type: string
+          enum: [財布・カバン類, 衣類, 電子機器, 傘, その他]
+        features:
+          type: ["string", "null"]
+
+    LostReportStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [探索中, 解決済, キャンセル]
+
+    LostReportList:
+      type: object
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/LostReport"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    LostReportWithMatches:
+      type: object
+      required: [report, matches]
+      properties:
+        report:
+          $ref: "#/components/schemas/LostReport"
+        matches:
+          type: array
+          items:
+            $ref: "#/components/schemas/MatchCandidate"
+
+    MatchCandidate:
+      type: object
+      required:
+        - id
+        - foundItem
+        - lostReport
+        - score
+        - reasons
+      properties:
+        id:
+          type: string
+        foundItem:
+          $ref: "#/components/schemas/FoundItem"
+        lostReport:
+          $ref: "#/components/schemas/LostReport"
+        score:
+          type: integer
+          description: Match score 0-100
+        reasons:
+          type: array
+          items:
+            type: string
+          description: Human-readable reasons for the match
 
