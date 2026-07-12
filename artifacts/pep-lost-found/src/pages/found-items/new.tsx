@@ -141,7 +141,7 @@ export default function NewFoundItem() {
               
               {/* Image Upload Section */}
               <div className="space-y-3">
-                <FormLabel>写真</FormLabel>
+                <label className="text-sm font-medium leading-none">写真</label>
                 <div className="flex flex-col items-center justify-center border-2 border-dashed border-border/60 rounded-xl bg-secondary/20 p-6 relative overflow-hidden transition-colors hover:bg-secondary/40">
                   {imagePreview ? (
                     <img src={imagePreview} alt="プレビュー" className="w-full max-w-[300px] h-auto rounded-md object-contain z-10" />
