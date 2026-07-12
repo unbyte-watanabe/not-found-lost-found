@@ -71,7 +71,7 @@ export default function NewFoundItem() {
 
     setUploading(true);
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("file", file);
 
     try {
       const response = await fetch("/api/upload/image", {
