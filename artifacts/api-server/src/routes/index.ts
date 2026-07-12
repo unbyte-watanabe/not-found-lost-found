@@ -5,6 +5,7 @@ import foundItemsRouter from "./found-items";
 import lostReportsRouter from "./lost-reports";
 import matchesRouter from "./matches";
 import uploadRouter from "./upload";
+import analyzeRouter from "./analyze";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(foundItemsRouter);
 router.use(lostReportsRouter);
 router.use(matchesRouter);
 router.use(uploadRouter);
+router.use(analyzeRouter);
 
 export default router;

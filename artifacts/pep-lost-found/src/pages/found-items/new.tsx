@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Camera, Image as ImageIcon, Loader2, ArrowLeft } from "lucide-react";
+import { Camera, Loader2, ArrowLeft, Sparkles } from "lucide-react";
 import { useCreateFoundItem, FoundItemInputCategory } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,7 +38,9 @@ export default function NewFoundItem() {
   const { toast } = useToast();
   const createItem = useCreateFoundItem();
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -46,7 +48,7 @@ export default function NewFoundItem() {
       category: "財布・カバン類",
       subCategory: "",
       features: "",
-      foundDatetime: new Date().toISOString().slice(0, 16), // YYYY-MM-DDThh:mm
+      foundDatetime: new Date().toISOString().slice(0, 16),
       foundLocation: "",
       storageLocation: "",
       imageUrl: "",
@@ -64,8 +66,8 @@ export default function NewFoundItem() {
 
     // Show local preview immediately
     const reader = new FileReader();
-    reader.onload = (e) => {
-      setImagePreview(e.target?.result as string);
+    reader.onload = (ev) => {
+      setImagePreview(ev.target?.result as string);
     };
     reader.readAsDataURL(file);
 
@@ -80,19 +82,55 @@ export default function NewFoundItem() {
       });
 
       if (!response.ok) throw new Error("アップロードに失敗しました");
-      
+
       const data = await response.json();
       form.setValue("imageUrl", data.url);
-      toast({ title: "画像をアップロードしました" });
-    } catch (error) {
-      toast({ 
-        title: "エラー", 
-        description: "画像のアップロードに失敗しました", 
-        variant: "destructive" 
+      setUploadedImageUrl(data.url);
+      toast({ title: "画像をアップロードしました", description: "「AI解析」ボタンで情報を自動入力できます" });
+    } catch {
+      toast({
+        title: "エラー",
+        description: "画像のアップロードに失敗しました",
+        variant: "destructive"
       });
       setImagePreview(null);
+      setUploadedImageUrl(null);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleAnalyze = async () => {
+    if (!uploadedImageUrl) return;
+    setAnalyzing(true);
+    try {
+      const response = await fetch("/api/analyze-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: uploadedImageUrl }),
+      });
+
+      if (!response.ok) throw new Error("解析に失敗しました");
+
+      const data = await response.json() as {
+        category: FormValues["category"];
+        subCategory: string;
+        features: string;
+      };
+
+      form.setValue("category", data.category);
+      form.setValue("subCategory", data.subCategory);
+      form.setValue("features", data.features);
+
+      toast({ title: "AI解析完了", description: "カテゴリ・特徴を自動入力しました。内容をご確認ください。" });
+    } catch {
+      toast({
+        title: "AI解析に失敗しました",
+        description: "手動で入力してください",
+        variant: "destructive"
+      });
+    } finally {
+      setAnalyzing(false);
     }
   };
 
@@ -114,10 +152,10 @@ export default function NewFoundItem() {
           }
         }
       });
-      
+
       toast({ title: "拾得物を登録しました", description: `管理番号: ${result.managementNo}` });
       setLocation(`/found-items/${result.id}`);
-    } catch (error) {
+    } catch {
       toast({ title: "登録に失敗しました", variant: "destructive" });
     }
   };
@@ -138,7 +176,7 @@ export default function NewFoundItem() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Card className="shadow-sm border-border/50">
             <CardContent className="p-6 space-y-6">
-              
+
               {/* Image Upload Section */}
               <div className="space-y-3">
                 <label className="text-sm font-medium leading-none">写真</label>
@@ -153,19 +191,40 @@ export default function NewFoundItem() {
                       <p className="text-sm font-medium">タップして写真を撮影または選択</p>
                     </div>
                   )}
-                  {uploading && (
-                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-20 flex items-center justify-center">
+                  {(uploading || analyzing) && (
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center gap-2">
                       <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {analyzing ? "AI解析中..." : "アップロード中..."}
+                      </p>
                     </div>
                   )}
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    className="absolute inset-0 opacity-0 cursor-pointer z-30" 
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute inset-0 opacity-0 cursor-pointer z-30"
                     onChange={handleImageUpload}
-                    disabled={uploading}
+                    disabled={uploading || analyzing}
                   />
                 </div>
+
+                {/* AI Analyze Button — shown after upload */}
+                {uploadedImageUrl && !uploading && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full gap-2 border-primary/40 text-primary hover:bg-primary/5"
+                    onClick={handleAnalyze}
+                    disabled={analyzing}
+                  >
+                    {analyzing ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-4 h-4" />
+                    )}
+                    {analyzing ? "AI解析中..." : "AIで画像を解析して自動入力"}
+                  </Button>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -175,7 +234,7 @@ export default function NewFoundItem() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>カテゴリ <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="カテゴリを選択" />
@@ -270,7 +329,7 @@ export default function NewFoundItem() {
           <Card className="shadow-sm border-border/50">
             <CardContent className="p-6 space-y-6">
               <h3 className="font-bold border-b pb-2">拾得者情報 (任意)</h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
@@ -330,7 +389,7 @@ export default function NewFoundItem() {
             <Button type="button" variant="outline" onClick={() => setLocation("/found-items")}>
               キャンセル
             </Button>
-            <Button type="submit" disabled={createItem.isPending || uploading} className="px-8 shadow-sm">
+            <Button type="submit" disabled={createItem.isPending || uploading || analyzing} className="px-8 shadow-sm">
               {createItem.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               登録する
             </Button>
