@@ -2335,3 +2335,191 @@ tbody td.mono {
 .print-footer {
   display: none;
 }
+
+/* =============================================================================
+   Mobile Navigation — topnav + bottom-nav + sidebar drawer
+   ============================================================================= */
+
+/* ---- Utility classes used in views ---- */
+.page-body       { padding: 0; }
+.stat-grid       { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card-sub   { font-size: 12px; color: var(--color-text-muted); margin-top: 2px; }
+.flex            { display: flex; }
+.items-center    { align-items: center; }
+.gap-8           { gap: 8px; }
+.gap-16          { gap: 16px; }
+.mb-8            { margin-bottom: 8px; }
+.mb-16           { margin-bottom: 16px; }
+.mb-24           { margin-bottom: 24px; }
+.text-small      { font-size: 12px; }
+.text-muted      { color: var(--color-text-muted); }
+.text-center     { text-align: center; }
+.w-full          { width: 100%; }
+
+/* ---- Mobile Top Bar ---- */
+.topnav {
+  display: none; /* shown only on mobile via @media below */
+  position: sticky;
+  top: 0;
+  z-index: 110;
+  height: 52px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 12px;
+}
+
+.topnav-logo {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topnav-logo:hover {
+  color: var(--color-primary);
+}
+
+.topnav-hamburger {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.topnav-hamburger:hover {
+  background-color: var(--color-surface-alt);
+}
+
+/* ---- Mobile Bottom Navigation Bar ---- */
+.bottom-nav {
+  display: none; /* shown only on mobile via @media below */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 110;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+  /* safe-area for iPhone home indicator */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.bottom-nav-inner {
+  display: flex;
+  height: 58px;
+  align-items: stretch;
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  padding: 4px 2px;
+  border-top: 2px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  min-width: 0;
+}
+
+.bottom-nav-item svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.bottom-nav-item span {
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.bottom-nav-item.active {
+  color: var(--color-primary);
+  border-top-color: var(--color-primary);
+}
+
+.bottom-nav-item:hover {
+  color: var(--color-primary-hover);
+}
+
+/* ---- Responsive: enable mobile nav on small screens ---- */
+@media (max-width: 767px) {
+  /* Show mobile-only elements */
+  .topnav     { display: flex; }
+  .bottom-nav { display: block; }
+
+  /* Sidebar becomes an off-canvas drawer below the topnav */
+  .sidebar {
+    top: 52px;
+    height: calc(100vh - 52px);
+    z-index: 105;
+  }
+
+  /* Main content fills full width (no sidebar offset) */
+  .main-content {
+    margin-left: 0;
+  }
+
+  /* Body padding at bottom to avoid content hidden behind bottom nav */
+  body {
+    padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Toast sits above bottom nav */
+  #toast-container {
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    right: 12px;
+  }
+
+  .toast {
+    max-width: 100%;
+  }
+
+  /* Stat grid: 2 columns on small screens */
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Page padding reduction */
+  .page-content {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Stat grid: 1 column on very small screens */
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Print: hide both nav bars ---- */
+@media print {
+  .topnav,
+  .bottom-nav { display: none !important; }
+  body { padding-bottom: 0; }
+}

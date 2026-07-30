@@ -6,97 +6,66 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'PEP落とし物管理') | PEP落とし物管理</title>
   <link rel="stylesheet" href="/css/app.css">
-  {{-- Lucide icons --}}
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" defer></script>
   @stack('styles')
 </head>
 <body>
 
-{{-- ===== Mobile top nav ===== --}}
-<nav class="topnav">
-  <span class="topnav-title">🧸 PEP落とし物管理</span>
-  <button class="hamburger" id="hamburger-btn" aria-label="メニューを開く">
-    <i data-lucide="menu" style="width:22px;height:22px"></i>
+{{-- ===== Mobile-only top bar ===== --}}
+<header class="topnav">
+  <a class="topnav-logo" href="{{ route('dashboard') }}">
+    🧸 PEP落とし物管理
+  </a>
+  <button class="topnav-hamburger" data-hamburger aria-label="メニューを開く" aria-expanded="false">
+    <i data-lucide="menu" style="width:22px;height:22px;pointer-events:none"></i>
   </button>
-</nav>
+</header>
 
-{{-- ===== Mobile slide-in menu ===== --}}
-<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="ナビゲーションメニュー">
-  <div class="mobile-overlay" id="mobile-overlay"></div>
-  <div class="mobile-panel">
-    <button class="mobile-close" id="mobile-close" aria-label="メニューを閉じる">
-      <i data-lucide="x" style="width:20px;height:20px"></i>
-    </button>
-    <div style="padding:20px 0 0">
-      <div style="padding:0 20px 16px; border-bottom:1px solid var(--border); margin-bottom:8px;">
-        <div style="font-weight:700; font-size:.95rem;">🧸 PEP落とし物管理</div>
-        <div style="font-size:.7rem; color:var(--text-muted);">PlayEarth Park</div>
-      </div>
-      <a href="{{ route('dashboard') }}"
-         class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-        <i data-lucide="layout-dashboard"></i> ダッシュボード
-      </a>
-      <a href="{{ route('found-items.index') }}"
-         class="nav-item {{ request()->routeIs('found-items.*') ? 'active' : '' }}">
-        <i data-lucide="package-search"></i> 拾得物一覧
-      </a>
-      <a href="{{ route('lost-reports.index') }}"
-         class="nav-item {{ request()->routeIs('lost-reports.*') ? 'active' : '' }}">
-        <i data-lucide="file-search"></i> 紛失届一覧
-      </a>
-      <a href="{{ route('matches.index') }}"
-         class="nav-item {{ request()->routeIs('matches.*') ? 'active' : '' }}">
-        <i data-lucide="git-compare-arrows"></i> マッチング確認
-      </a>
-      <a href="{{ route('export.police-form') }}"
-         class="nav-item {{ request()->routeIs('export.*') ? 'active' : '' }}">
-        <i data-lucide="printer"></i> 警察提出出力
-      </a>
-    </div>
-  </div>
-</div>
+{{-- ===== Sidebar overlay (mobile) ===== --}}
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 
 {{-- ===== App shell ===== --}}
-<div class="app-shell">
+<div class="app-layout">
 
-  {{-- ===== Desktop Sidebar ===== --}}
+  {{-- ===== Sidebar (desktop + mobile drawer) ===== --}}
   <aside class="sidebar" role="navigation" aria-label="メインナビゲーション">
     <div class="sidebar-logo">
-      <h1>🧸 PEP落とし物管理</h1>
-      <span>PlayEarth Park System</span>
+      <a href="{{ route('dashboard') }}" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px;">
+        <span style="font-weight:700;font-size:.93rem;">🧸 PEP落とし物管理</span>
+        <span style="font-size:.68rem;color:var(--color-text-muted);">PlayEarth Park System</span>
+      </a>
     </div>
 
     <nav class="sidebar-nav">
       <a href="{{ route('dashboard') }}"
-         class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+         class="sidebar-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
         <i data-lucide="layout-dashboard"></i>
         ダッシュボード
       </a>
       <a href="{{ route('found-items.index') }}"
-         class="nav-item {{ request()->routeIs('found-items.*') ? 'active' : '' }}">
+         class="sidebar-nav-link {{ request()->routeIs('found-items.*') ? 'active' : '' }}">
         <i data-lucide="package-search"></i>
         拾得物一覧
       </a>
       <a href="{{ route('lost-reports.index') }}"
-         class="nav-item {{ request()->routeIs('lost-reports.*') ? 'active' : '' }}">
+         class="sidebar-nav-link {{ request()->routeIs('lost-reports.*') ? 'active' : '' }}">
         <i data-lucide="file-search"></i>
         紛失届一覧
       </a>
       <a href="{{ route('matches.index') }}"
-         class="nav-item {{ request()->routeIs('matches.*') ? 'active' : '' }}">
+         class="sidebar-nav-link {{ request()->routeIs('matches.*') ? 'active' : '' }}">
         <i data-lucide="git-compare-arrows"></i>
         マッチング確認
       </a>
       <a href="{{ route('export.police-form') }}"
-         class="nav-item {{ request()->routeIs('export.*') ? 'active' : '' }}">
+         class="sidebar-nav-link {{ request()->routeIs('export.*') ? 'active' : '' }}">
         <i data-lucide="printer"></i>
         警察提出出力
       </a>
     </nav>
 
-    <div class="sidebar-footer">
+    <div class="sidebar-footer" style="font-size:.7rem;color:var(--color-text-muted);">
       <div>© {{ date('Y') }} PlayEarth Park</div>
-      <div style="margin-top:3px">v1.0.0</div>
     </div>
   </aside>
 
@@ -105,7 +74,38 @@
     @yield('content')
   </main>
 
-</div>{{-- /.app-shell --}}
+</div>{{-- /.app-layout --}}
+
+{{-- ===== Mobile bottom navigation ===== --}}
+<nav class="bottom-nav" aria-label="モバイルナビゲーション">
+  <div class="bottom-nav-inner">
+    <a href="{{ route('dashboard') }}"
+       class="bottom-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+      <i data-lucide="layout-dashboard"></i>
+      <span>ホーム</span>
+    </a>
+    <a href="{{ route('found-items.index') }}"
+       class="bottom-nav-item {{ request()->routeIs('found-items.*') ? 'active' : '' }}">
+      <i data-lucide="package-search"></i>
+      <span>拾得物</span>
+    </a>
+    <a href="{{ route('lost-reports.index') }}"
+       class="bottom-nav-item {{ request()->routeIs('lost-reports.*') ? 'active' : '' }}">
+      <i data-lucide="file-search"></i>
+      <span>紛失届</span>
+    </a>
+    <a href="{{ route('matches.index') }}"
+       class="bottom-nav-item {{ request()->routeIs('matches.*') ? 'active' : '' }}">
+      <i data-lucide="git-compare-arrows"></i>
+      <span>照合</span>
+    </a>
+    <a href="{{ route('export.police-form') }}"
+       class="bottom-nav-item {{ request()->routeIs('export.*') ? 'active' : '' }}">
+      <i data-lucide="printer"></i>
+      <span>出力</span>
+    </a>
+  </div>
+</nav>
 
 {{-- ===== Toast container ===== --}}
 <div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="false">
@@ -125,9 +125,7 @@
   @endif
 </div>
 
-{{-- ===== Scripts ===== --}}
 <script src="/js/app.js"></script>
 @stack('scripts')
-
 </body>
 </html>
