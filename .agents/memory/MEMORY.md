@@ -1,1 +1,2 @@
 - [Laravel PEP app fixes](laravel-pep-fixes.md) — recurring pitfalls found and fixed in the Laravel rebuild of the lost-found system.
+- [GitHub remote setup](github-remote-setup.md) — how the GitHub origin was set up for this project (SSH deploy key, connector SDK).
