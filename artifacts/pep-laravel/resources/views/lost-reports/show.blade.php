@@ -19,7 +19,7 @@
 
 <div class="page-body">
 
-  <div style="display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start;">
+  <div class="detail-layout">
 
     {{-- ===== Left: details ===== --}}
     <div style="display:flex; flex-direction:column; gap:16px;">

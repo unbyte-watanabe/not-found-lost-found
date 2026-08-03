@@ -69,7 +69,7 @@
   </div>
 
   {{-- ===== Main grid: chart + tasks ===== --}}
-  <div style="display:grid; grid-template-columns: 1fr 340px; gap:20px; align-items:start;">
+  <div class="detail-layout">
 
     {{-- Weekly trend chart --}}
     <div class="card">

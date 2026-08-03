@@ -31,7 +31,7 @@
   <form method="POST" action="{{ route('lost-reports.store') }}" id="create-report-form" novalidate>
     @csrf
 
-    <div style="display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start;">
+    <div class="detail-layout">
 
       {{-- ===== Left: main form ===== --}}
       <div style="display:flex; flex-direction:column; gap:16px;">

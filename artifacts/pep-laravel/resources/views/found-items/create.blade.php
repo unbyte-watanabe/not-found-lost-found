@@ -31,7 +31,7 @@
   <form method="POST" action="{{ route('found-items.store') }}" enctype="multipart/form-data" id="create-form" novalidate>
     @csrf
 
-    <div style="display:grid; grid-template-columns:1fr 360px; gap:20px; align-items:start;">
+    <div class="detail-layout">
 
       {{-- ===== Left column: main form ===== --}}
       <div style="display:flex; flex-direction:column; gap:16px;">

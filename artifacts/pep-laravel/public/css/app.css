@@ -130,6 +130,8 @@ h1, h2, h3, h4, h5, h6 {
   overflow-y: auto;
   overflow-x: hidden;
   transition: transform var(--transition-base);
+  /* Mobile-first: hidden by default, shown on desktop */
+  transform: translateX(-100%);
 }
 
 .sidebar-logo {
@@ -261,7 +263,7 @@ h1, h2, h3, h4, h5, h6 {
    ----------------------------------------------------------------------------- */
 .main-content {
   flex: 1;
-  margin-left: var(--sidebar-width);
+  margin-left: 0; /* Mobile-first: no sidebar offset */
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -334,21 +336,21 @@ h1, h2, h3, h4, h5, h6 {
 
 .page-content {
   flex: 1;
-  padding: 24px;
+  padding: 14px; /* Mobile-first */
 }
 
 /* Page header */
 .page-header {
   display: flex;
+  flex-direction: column; /* Mobile-first: stack */
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
 .page-title {
-  font-size: 22px;
+  font-size: 18px; /* Mobile-first: smaller */
   font-weight: 700;
   color: var(--color-text);
 }
@@ -384,9 +386,9 @@ h1, h2, h3, h4, h5, h6 {
    ----------------------------------------------------------------------------- */
 .stat-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(2, 1fr); /* Mobile-first: 2 columns */
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .stat-card {
@@ -697,9 +699,9 @@ tbody td.mono {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 16px; /* Mobile-first */
   box-shadow: var(--shadow-sm);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .form-section-title {
@@ -721,20 +723,20 @@ tbody td.mono {
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: 1fr; /* Mobile-first: single column */
+  gap: 14px;
 }
 
 .form-grid-3 {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr; /* Mobile-first */
 }
 
 .form-col-span-2 {
-  grid-column: span 2;
+  grid-column: span 1; /* Mobile-first */
 }
 
 .form-col-span-3 {
-  grid-column: span 3;
+  grid-column: span 1; /* Mobile-first */
 }
 
 .form-group {
@@ -876,12 +878,12 @@ tbody td.mono {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 16px 20px;
+  padding: 14px 16px;
   margin-bottom: 16px;
   display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  flex-wrap: wrap;
+  flex-direction: column; /* Mobile-first: stacked */
+  align-items: stretch;
+  gap: 10px;
   box-shadow: var(--shadow-sm);
 }
 
@@ -889,7 +891,8 @@ tbody td.mono {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 140px;
+  min-width: 0; /* Mobile-first: full width */
+  width: 100%;
 }
 
 .filter-group label {
@@ -951,18 +954,21 @@ tbody td.mono {
 
 /* Sizes */
 .btn-sm {
-  padding: 6px 12px;
-  font-size: 12px;
+  padding: 10px 14px; /* Mobile-first: 44px touch target */
+  font-size: 13px;
+  min-height: 44px;
 }
 
 .btn-md {
-  padding: 9px 18px;
+  padding: 12px 18px;
   font-size: 14px;
+  min-height: 44px;
 }
 
 .btn-lg {
-  padding: 12px 24px;
+  padding: 14px 24px;
   font-size: 15px;
+  min-height: 48px;
 }
 
 /* Variants */
@@ -1041,22 +1047,22 @@ tbody td.mono {
 
 /* Icon button */
 .btn-icon {
-  padding: 7px;
-  width: 34px;
-  height: 34px;
+  padding: 10px;
+  width: 44px;  /* Mobile-first: 44px touch target */
+  height: 44px;
   border-radius: var(--radius-md);
 }
 
 .btn-icon.btn-sm {
-  width: 28px;
-  height: 28px;
-  padding: 4px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
 }
 
 .btn-icon.btn-lg {
-  width: 42px;
-  height: 42px;
-  padding: 9px;
+  width: 48px;
+  height: 48px;
+  padding: 11px;
 }
 
 .btn svg {
@@ -2095,111 +2101,161 @@ tbody td.mono {
 }
 
 /* -----------------------------------------------------------------------------
-   Responsive Breakpoints
+   Table wrap — always allow horizontal scroll on mobile
+   ----------------------------------------------------------------------------- */
+.table-wrap,
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-md);
+}
+
+/* -----------------------------------------------------------------------------
+   Detail layout — two-column sidebar+main, stacks on mobile
+   ----------------------------------------------------------------------------- */
+.detail-layout {
+  display: flex;
+  flex-direction: column; /* Mobile-first: single column */
+  gap: 16px;
+}
+
+/* -----------------------------------------------------------------------------
+   Responsive Breakpoints — Mobile-first
+   ============================================================================
+   Base styles above are for mobile.
+   @media (min-width: 768px) restores desktop behaviour.
    ----------------------------------------------------------------------------- */
 
-/* Tablet: 768px - 1024px */
-@media (max-width: 1024px) {
+/* Desktop: restore sidebar + multi-column layouts */
+@media (min-width: 768px) {
+  /* Show sidebar on desktop */
+  .sidebar {
+    transform: none;
+  }
+
+  /* Main content offset by sidebar width */
+  .main-content {
+    margin-left: var(--sidebar-width);
+  }
+
+  /* Page content — more padding on desktop */
+  .page-content {
+    padding: 24px;
+  }
+
+  /* Page header — inline layout */
+  .page-header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  /* Page title — larger on desktop */
+  .page-title {
+    font-size: 22px;
+  }
+
+  /* Form grids — multi-column on desktop */
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
   .form-grid-3 {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-col-span-2 {
+    grid-column: span 2;
   }
 
   .form-col-span-3 {
     grid-column: span 2;
   }
+
+  /* Filter bar — inline on desktop */
+  .filter-bar {
+    flex-direction: row;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    gap: 12px;
+  }
+
+  .filter-group {
+    min-width: 140px;
+    width: auto;
+  }
+
+  /* Stat cards — auto-fit multi-column on desktop */
+  .stat-cards {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  /* Form section — more padding on desktop */
+  .form-section {
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  /* Detail layout — two-column grid on desktop */
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* Buttons — slightly smaller on desktop (mouse is more precise) */
+  .btn-sm {
+    padding: 7px 14px;
+    font-size: 13px;
+    min-height: 34px;
+  }
+
+  .btn-md {
+    padding: 9px 18px;
+    font-size: 14px;
+    min-height: 38px;
+  }
+
+  .btn-icon {
+    width: 34px;
+    height: 34px;
+    padding: 7px;
+  }
+
+  .btn-icon.btn-sm {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+  }
 }
 
-/* Mobile: < 768px */
-@media (max-width: 767px) {
-  /* Sidebar hidden by default on mobile */
-  .sidebar {
-    transform: translateX(-100%);
+/* Wide desktop: 3-column form grids */
+@media (min-width: 1025px) {
+  .form-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .sidebar.mobile-open {
-    transform: translateX(0);
-  }
-
-  /* Main content takes full width */
-  .main-content {
-    margin-left: 0;
-  }
-
-  /* Show hamburger button */
-  .top-nav-hamburger {
-    display: flex;
-  }
-
-  /* Page padding reduction */
-  .page-content {
-    padding: 16px;
-  }
-
-  /* Stat cards: 2 columns on mobile */
-  .stat-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  /* Full width forms */
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-col-span-2,
   .form-col-span-3 {
-    grid-column: span 1;
+    grid-column: span 3;
   }
+}
 
-  /* Page header stack */
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  /* Table horizontal scroll */
-  .table-responsive {
-    overflow-x: auto;
-  }
-
-  /* Table font size */
-  table {
-    font-size: 13px;
-  }
-
-  thead th,
-  tbody td {
-    padding: 10px 12px;
-  }
-
-  /* Toast full width on mobile */
-  #toast-container {
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-  }
-
-  .toast {
-    max-width: 100%;
-  }
-
-  /* Modal full screen */
+/* Mobile-only rules that have no desktop equivalent */
+@media (max-width: 767px) {
+  /* Modal — compact on small screen */
   .modal {
     max-height: 95vh;
     border-radius: var(--radius-lg);
   }
 
-  /* Filter bar stack */
-  .filter-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filter-group {
-    min-width: 0;
-    width: 100%;
-  }
-
-  /* Detail rows stack */
+  /* Detail rows stack vertically */
   .detail-row {
     flex-direction: column;
     gap: 4px;
@@ -2209,12 +2265,12 @@ tbody td.mono {
     min-width: 0;
   }
 
-  /* Pagination */
+  /* Pagination info hidden to save space */
   .pagination-info {
     display: none;
   }
 
-  /* Buttons */
+  /* Button group stacks vertically */
   .btn-group {
     flex-direction: column;
     width: 100%;
@@ -2224,12 +2280,14 @@ tbody td.mono {
     border-radius: var(--radius-md);
   }
 
-  /* Stat cards single column on very small screens */
-}
+  /* Tables — smaller on mobile */
+  table {
+    font-size: 13px;
+  }
 
-@media (max-width: 480px) {
-  .stat-cards {
-    grid-template-columns: 1fr;
+  thead th,
+  tbody td {
+    padding: 8px 10px;
   }
 }
 
@@ -2342,7 +2400,8 @@ tbody td.mono {
 
 /* ---- Utility classes used in views ---- */
 .page-body       { padding: 0; }
-.stat-grid       { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+/* stat-grid: 2-col mobile, auto-fit desktop (overridden in min-width block below) */
+.stat-grid       { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
 .stat-card-sub   { font-size: 12px; color: var(--color-text-muted); margin-top: 2px; }
 .flex            { display: flex; }
 .items-center    { align-items: center; }
@@ -2465,32 +2524,27 @@ tbody td.mono {
   color: var(--color-primary-hover);
 }
 
-/* ---- Responsive: enable mobile nav on small screens ---- */
+/* ---- Mobile nav: enable topnav + bottom-nav, adjust sidebar position ---- */
 @media (max-width: 767px) {
   /* Show mobile-only elements */
   .topnav     { display: flex; }
   .bottom-nav { display: block; }
 
-  /* Sidebar becomes an off-canvas drawer below the topnav */
+  /* Sidebar drawer appears below topnav bar */
   .sidebar {
     top: 52px;
     height: calc(100vh - 52px);
     z-index: 105;
   }
 
-  /* Main content fills full width (no sidebar offset) */
-  .main-content {
-    margin-left: 0;
-  }
-
-  /* Body padding at bottom to avoid content hidden behind bottom nav */
+  /* Body padding for bottom nav + iPhone safe area */
   body {
     padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Toast sits above bottom nav */
+  /* Toast above bottom nav */
   #toast-container {
-    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
     left: 12px;
     right: 12px;
   }
@@ -2498,20 +2552,24 @@ tbody td.mono {
   .toast {
     max-width: 100%;
   }
+}
 
-  /* Stat grid: 2 columns on small screens */
+/* Desktop: hide mobile nav, restore sidebar */
+@media (min-width: 768px) {
+  .topnav     { display: none; }
+  .bottom-nav { display: none; }
+
+  /* stat-grid auto-fit on desktop */
   .stat-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  /* Page padding reduction */
-  .page-content {
-    padding: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
   }
 }
 
-@media (max-width: 480px) {
-  /* Stat grid: 1 column on very small screens */
+/* Very small phones: single-column stat grids */
+@media (max-width: 400px) {
+  .stat-cards,
   .stat-grid {
     grid-template-columns: 1fr;
   }
