@@ -69,7 +69,7 @@ export function Layout({ children }: LayoutProps) {
             <SheetContent side="left" className="w-[280px] p-0 border-r-0 bg-background">
               <SheetHeader className="p-6 border-b border-border/50 text-left">
                 <SheetTitle className="text-xl font-bold tracking-tight text-primary">
-                  PEP落とし物管理
+                  🧸 Not Found
                 </SheetTitle>
               </SheetHeader>
               <div className="p-4">
@@ -77,7 +77,7 @@ export function Layout({ children }: LayoutProps) {
               </div>
             </SheetContent>
           </Sheet>
-          <span className="font-bold text-primary text-lg">PEP落とし物管理</span>
+          <span className="font-bold text-primary text-lg">🧸 Not Found</span>
         </div>
       </header>
 
@@ -85,9 +85,9 @@ export function Layout({ children }: LayoutProps) {
       <aside className="hidden md:flex w-[260px] flex-col border-r border-border/50 bg-card fixed inset-y-0 shadow-[4px_0_24px_rgba(66,55,50,0.03)] z-10">
         <div className="p-6 border-b border-border/50">
           <h1 className="text-xl font-bold tracking-tight text-primary">
-            PEP落とし物管理
+            🧸 Not Found
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">PlayEarthPark</p>
+          <p className="text-xs text-muted-foreground mt-1">Play Earth Park落とし物管理</p>
         </div>
         <div className="p-4 flex-1 overflow-y-auto">
           <NavLinks />
