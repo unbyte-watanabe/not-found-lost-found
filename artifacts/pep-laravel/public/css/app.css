@@ -2445,6 +2445,19 @@ tbody td.mono {
   color: var(--color-primary);
 }
 
+/* ===== オチカン ロゴフォント ===== */
+.ochikan-logo {
+  font-family: 'Dela Gothic One', sans-serif;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #e85d04 0%, #f48c06 60%, #ffba08 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 1px 3px rgba(232, 93, 4, 0.4));
+  line-height: 1.1;
+  text-decoration: none !important;
+}
+
 .topnav-hamburger {
   flex-shrink: 0;
   background: none;

@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>@yield('title', 'Not Found') | Not Found</title>
+  <title>@yield('title', 'オチカン') | オチカン</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/app.css">
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" defer></script>
   @stack('styles')
@@ -13,8 +16,8 @@
 
 {{-- ===== Mobile-only top bar ===== --}}
 <header class="topnav">
-  <a class="topnav-logo" href="{{ route('dashboard') }}">
-    🧸 Not Found
+  <a class="topnav-logo ochikan-logo" href="{{ route('dashboard') }}">
+    オチカン
   </a>
   <button class="topnav-hamburger" data-hamburger aria-label="メニューを開く" aria-expanded="false">
     <i data-lucide="menu" style="width:22px;height:22px;pointer-events:none"></i>
@@ -31,7 +34,7 @@
   <aside class="sidebar" role="navigation" aria-label="メインナビゲーション">
     <div class="sidebar-logo">
       <a href="{{ route('dashboard') }}" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px;">
-        <span style="font-weight:700;font-size:.93rem;">🧸 Not Found</span>
+        <span class="ochikan-logo" style="font-size:1.15rem;">オチカン</span>
         <span style="font-size:.68rem;color:var(--color-text-muted);">Play Earth Park落とし物管理</span>
       </a>
     </div>

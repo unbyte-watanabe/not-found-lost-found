@@ -68,8 +68,8 @@ export function Layout({ children }: LayoutProps) {
             </SheetTrigger>
             <SheetContent side="left" className="w-[280px] p-0 border-r-0 bg-background">
               <SheetHeader className="p-6 border-b border-border/50 text-left">
-                <SheetTitle className="text-xl font-bold tracking-tight text-primary">
-                  🧸 Not Found
+                <SheetTitle className="ochikan-logo text-2xl">
+                  オチカン
                 </SheetTitle>
               </SheetHeader>
               <div className="p-4">
@@ -77,15 +77,15 @@ export function Layout({ children }: LayoutProps) {
               </div>
             </SheetContent>
           </Sheet>
-          <span className="font-bold text-primary text-lg">🧸 Not Found</span>
+          <span className="ochikan-logo text-2xl">オチカン</span>
         </div>
       </header>
 
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-[260px] flex-col border-r border-border/50 bg-card fixed inset-y-0 shadow-[4px_0_24px_rgba(66,55,50,0.03)] z-10">
         <div className="p-6 border-b border-border/50">
-          <h1 className="text-xl font-bold tracking-tight text-primary">
-            🧸 Not Found
+          <h1 className="ochikan-logo text-3xl">
+            オチカン
           </h1>
           <p className="text-xs text-muted-foreground mt-1">Play Earth Park落とし物管理</p>
         </div>
